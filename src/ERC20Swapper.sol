@@ -58,7 +58,7 @@ contract ERC20Swapper is IERC20Swapper, UUPSUpgradeable, OwnableUpgradeable {
 
         require(amountOut >= minAmount, "Min value not reached.");
 
-        return 0;
+        return amountOut;
     }
 
     function _authorizeUpgrade(
