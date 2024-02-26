@@ -1,19 +1,8 @@
-## Foundry
+## ERC20Swapper
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### .env
 
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
+Use .env.example in order to setup the environment variables for this project
 
 ### Build
 
@@ -21,46 +10,13 @@ https://book.getfoundry.sh/
 $ forge build
 ```
 
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
 ### Deploy
 
 ```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge script script/ERC20SwapperUp.s.sol --rpc-url <your_rpc_url> --verify --etherscan-api-key <your_api_key> --broadcast 
 ```
 
-### Cast
+### Deployed address
+ You can find a deployed version of this contract here: [Proxy](https://sepolia.etherscan.io/address/0xea853fa1181c28dcde62e067923287771723a9a0#writeProxyContract)
 
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+ You can find a deployed version of this contract here: [Implementation](https://sepolia.etherscan.io/address/0xb53d0edb9d8ee6709fef4d621a3cad1b52f56fb6)
