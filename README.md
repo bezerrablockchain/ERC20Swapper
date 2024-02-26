@@ -17,6 +17,6 @@ $ forge script script/ERC20SwapperUp.s.sol --rpc-url <your_rpc_url> --verify --e
 ```
 
 ### Deployed address
- You can find a deployed version of this contract here: [Proxy](https://sepolia.etherscan.io/address/0xea853fa1181c28dcde62e067923287771723a9a0#writeProxyContract)
+ You can find a deployed version of this contract here: [Proxy](https://sepolia.etherscan.io/address/0x30c928b67179c1A9E9B4fD0a58E000e37a994BA3#writeProxyContract)
 
- You can find a deployed version of this contract here: [Implementation](https://sepolia.etherscan.io/address/0xb53d0edb9d8ee6709fef4d621a3cad1b52f56fb6)
+ You can find a deployed version of this contract here: [Implementation](https://sepolia.etherscan.io/address/0x49579a5bAB649AE08C059AaEb69f2f9B6A8728D0)

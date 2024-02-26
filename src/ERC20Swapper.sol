@@ -16,6 +16,8 @@ contract ERC20Swapper is IERC20Swapper, UUPSUpgradeable, OwnableUpgradeable {
         uint256 amountOutMinimum;
         uint160 sqrtPriceLimitX96;
     }
+    error FailedToSwap();
+    error MinValueNotReached();
 
     function initialize() public initializer {
         __Ownable_init(msg.sender);
@@ -52,11 +54,11 @@ contract ERC20Swapper is IERC20Swapper, UUPSUpgradeable, OwnableUpgradeable {
             value: msg.value
         }(message);
 
-        require(sent, "Failed to swap Ether to Token");
+        if(!sent) revert FailedToSwap();
 
         amountOut = uint256(bytes32(data));
 
-        require(amountOut >= minAmount, "Min value not reached.");
+        if(amountOut < minAmount) revert MinValueNotReached();
 
         return amountOut;
     }
