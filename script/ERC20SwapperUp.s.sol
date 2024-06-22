@@ -1,36 +1,40 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+
 import {Script, console} from "forge-std/Script.sol";
-
 import {ERC20Swapper} from "../src/ERC20Swapper.sol";
+import {ERC20SwapperV2} from "../src/ERC20SwapperV2.sol";
 
-contract ERC20SwapperScript is Script {
-    address public implementation;
-    address public proxyAddress;
-    bytes public implemetationData;
+contract ERC20SwapperDeployer is Script {
+    ERC20Swapper swapperV1;
+    ERC20SwapperV2 swapperV2;
+    ERC1967Proxy proxy;
+    uint256 privateKey;
+    address deployer;
+
+    function setUp() public {
+        privateKey = vm.envUint("PRIVATE_KEY");
+        deployer = vm.addr(privateKey);
+
+        proxy = ERC1967Proxy(payable(vm.envAddress("ERC20SWAPPER_PROXY")));
+        swapperV1 = ERC20Swapper(address(proxy));
+
+        console.log("deployer", deployer);
+    }
 
     function run() public {
-        uint privateKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(privateKey);
-        console.log("deployer", deployer);
-
         vm.startBroadcast(privateKey);
 
-        ERC20Swapper erc20Swapper = new ERC20Swapper();
-        console.log(
-            "ERC20Swapper implementation deployed at: ",
-            address(erc20Swapper)
-        );
-        implementation = address(erc20Swapper);
-        implemetationData = bytes.concat(erc20Swapper.initialize.selector);
+        ERC20SwapperV2 impSwapperV2 = new ERC20SwapperV2();
+        swapperV1.upgradeToAndCall(address(impSwapperV2), "");
 
-        proxyAddress = address(
-            new ERC1967Proxy(implementation, implemetationData)
-        );
-        console.log("ERC20Swapper proxy deployed at: ", proxyAddress);
+        swapperV2 = ERC20SwapperV2(address(proxy));
+
+        console.log("Implementation contract ERC20Swapper deployed at: ", address(swapperV2));
+        console.log("Proxy contract ERC20Swapper deployed at: ", address(proxy));
+        console.log("Actual Version is: ", swapperV2.version());
 
         vm.stopBroadcast();
     }

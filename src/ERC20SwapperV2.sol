@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "./IERC20Swapper.sol";
 
-contract ERC20Swapper is
+contract ERC20SwapperV2 is
     IERC20Swapper,
     UUPSUpgradeable,
     OwnableUpgradeable,
@@ -29,6 +29,7 @@ contract ERC20Swapper is
     address constant WETH9 = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619;
     address constant WMATIC = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270;
     uint24 constant POOL_FEE = 3000;
+    string public constant version = "v2";
 
     constructor() {
         // __disableInitializers();

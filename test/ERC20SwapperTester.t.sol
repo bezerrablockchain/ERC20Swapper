@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract ERC20SwapperTest is Test {
     ERC20Swapper swapper;
+    ERC1967Proxy proxy;
     address owner = address(0x777888999);
     address user01 = address(0x123456789);
     address tokenOut = address(0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359); //USDC
@@ -20,7 +21,7 @@ contract ERC20SwapperTest is Test {
 
         vm.startPrank(owner);
         // Deploy instance and get a proxy address
-        implERC20Swapper = new ERC20Swapper();
+        ERC20Swapper implERC20Swapper = new ERC20Swapper();
         proxy = new ERC1967Proxy(address(implERC20Swapper), "");
         swapper = ERC20Swapper(address(proxy));
         swapper.initialize();
@@ -28,13 +29,71 @@ contract ERC20SwapperTest is Test {
     }
 
     function testSwapEtherToToken() public {
-        uint256 minAmount = 1;
+        uint256 minAmount = 500000; //minAmount in USDC means 0,50 USDC for 1 Matic is the minimum amountOut
 
-        // This test assumes you're already connected to Sepolia and can send transactions
-        // Sending Ether to the swapper contract to simulate swap
-        (bool success, bytes memory retMsg) = address(swapper).call{value: 0.01 ether}(abi.encodeWithSignature("swapEtherToToken(address,uint256)", tokenOut, minAmount));
-        console.logBytes(retMsg);
-        console.logUint(uint256(bytes32(retMsg)));
+        (bool success, ) = address(swapper).call{
+            value: 1 ether
+        }(
+            abi.encodeWithSignature(
+                "swapEtherToToken(address,uint256)",
+                tokenOut,
+                minAmount
+            )
+        );
         assertTrue(success, "Swap failed");
+    }
+
+    function testSwapEtherToTokenFailMinValueNotReached() public {
+        uint256 minAmount = 5000000; //minAmount in USDC means 5 USDC for 1 Matic is the minimum amountOut
+        
+        (bool success, ) = address(swapper).call{
+            value: 1 ether
+        }(
+            abi.encodeWithSignature(
+                "swapEtherToToken(address,uint256)",
+                tokenOut,
+                minAmount
+            )
+        );
+        assertFalse(success, "Swap failed");
+    }
+    function testSwapEtherToTokenFailNonZeroValueAllowed() public {
+        uint256 minAmount = 500000; //minAmount in USDC means 0,50 USDC for 1 Matic is the minimum amountOut
+
+        (bool success, ) = address(swapper).call{
+            value: 0
+        }(
+            abi.encodeWithSignature(
+                "swapEtherToToken(address,uint256)",
+                tokenOut,
+                minAmount
+            )
+        );
+        assertFalse(success, "Swap failed");
+    }
+    function testSwapEtherToTokenFailSwapFailed() public {
+        uint256 minAmount = 500000; //minAmount in USDC means 0,50 USDC for 1 Matic is the minimum amountOut
+
+        vm.expectRevert("Swap failed");
+        (bool success, ) = address(swapper).call{
+            value: 1 ether
+        }(
+            abi.encodeWithSignature(
+                "swapEtherToToken(address,uint256)",
+                address(0x007777888999), //Non-existent token
+                minAmount
+            )
+        );
+        assertFalse(success, "Swap failed");
+    }
+
+    function testUpgrade() public {
+        vm.startPrank(owner);
+        ERC20Swapper newImpl = new ERC20Swapper(); //Using same code, but it could be a v2
+
+        swapper.upgradeToAndCall(address(newImpl), "");
+
+        swapper = ERC20Swapper(address(proxy));
+        vm.stopPrank();
     }
 }
