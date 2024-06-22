@@ -69,7 +69,15 @@ $ forge script script/ERC20Swapper.s.sol:ERC20SwapperDeployer --rpc-url <your_rp
 ```
 
 ### Upgrade to a new version
-In case of necessity of change the actual smart contract code and upgrade it, execute this command bellow
+In case of necessity of change the actual smart contract code and upgrade it, first add a new variable to your ```.env``` file ```ERC20SWAPPER_PROXY``` this address is displayed when a deployment is made in format of log of execution, something like this should be displayed
+
+```shell
+  deployer 0x...
+  Implementation contract ERC20Swapper deployed at:  0x...
+  Proxy contract ERC20Swapper deployed at:  0x...
+```
+
+After created the variable and filled with actual proxy address, execute this command bellow
 ```shell
 $ forge script script/ERC20SwapperUP.s.sol:ERC20SwapperDeployer --rpc-url <your_rpc_url> --broadcast --etherscan-api-key <your_api_key> --verify
 ```
