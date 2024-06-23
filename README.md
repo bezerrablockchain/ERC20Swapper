@@ -1,6 +1,20 @@
 ## ERC20Swapper
 
-This project wraps a uniswap on Polygon to call a simple swap between Matic and an arbitrary token passed as parameter.
+This project wraps a uniswap on Polygon to call a simple swap between Matic and an arbitrary token passed as parameter.  Last section of this document has some consideration about topics like: ***Safety, Performance, Upgradeability, and Code quality***.
+
+### Set of contracts and its description
+#### src/contracts
+* **IERC20Swapper.sol**: Main contract minimal interface
+* **ERC20Swapper.sol**: Main contract to call swaps execution
+* **ERC20SwapperV2.sol**: Second version available in order to execute an upgrade if desired
+* **UniswapPolygon.sol**: Uniswaps connection and logic to perform the swap call
+
+#### src/test
+* **ERC20SwapperTester.t.sol**: Test file.  Tests all the functions and the Upgradeability feature
+
+#### src/script
+* **ERC20Swapper.s.sol**: First contract deployment using foundry and UUP pattern
+* **ERC20SwapperUp.s.sol**: Use this in case of needed upgrade
 
 ### forge
 Was used forge to setup the project structure and tests.  Follow this [link](https://book.getfoundry.sh/getting-started/installation) in order to install forge in your system
@@ -15,6 +29,8 @@ $ curl -L https://foundry.paradigm.xyz | bash
 ```shell
 $ foundryup
 ```
+### Clone the project
+This project can be found [here](https://github.com/bezerrablockchain/ERC20Swapper).  Clone it into your system, enter into the root folder ```ERC20Swapper``` and follow the instructions bellow in order to correct execute it.
 
 ### Environment
 
@@ -27,6 +43,7 @@ PRIVATE_KEY="0x..."
 MAINNET_RPC_URL="https://polygon..."
 ```
 ### Install dependencies
+This project uses Openzeppelin libraries, the installation is mandatory to run the project locally, use the command bellow to to it
 ```shell
 $ forge install
 ```
@@ -47,7 +64,7 @@ Actually the coverage for this project are 100% for lines and 100% for Functions
 
 | File                        | % Lines         | % Statements   | % Branches    | % Funcs       |
 |-----------------------------|-----------------|----------------|---------------|---------------|
-| src/ERC20Swapper.sol        | 100.00% (25/25) | 96.88% (31/32) | 75.00% (6/8)  | 100.00% (4/4) |
+| src/ERC20Swapper.sol        | 100.00% (14/14) | 93.75% (15/16) | 83.33% (5/6)  | 100.00% (4/4) |
 
 
 
@@ -87,9 +104,9 @@ You can get a valid ```<your_rpc_url>``` from any node-as-service providers like
 
 
 ### Deployed addresses
- You can find a deployed version of this contract here: [Proxy](https://sepolia.etherscan.io/address/0x033757effbf66a4f9d1c876edc0513bd641cfc8a#code)
+ You can find a deployed version of this contract here: [Proxy](https://sepolia.etherscan.io/address/0x2f34d0a1942881010d1eb4847ef3db94e507f5f9#code)
 
- You can find a deployed version of this contract here: [Implementation](https://sepolia.etherscan.io/address/0x564df1aa81b50ff5a38c4aa330cf218f7327cf53#code)
+ You can find a deployed version of this contract here: [Implementation](https://sepolia.etherscan.io/address/0x9c371a4317e17e7e0b9448d787f1d8f6ce7c063b#code)
 
 ## Some more questions to consideer
 
@@ -98,28 +115,28 @@ You can get a valid ```<your_rpc_url>``` from any node-as-service providers like
 The contract has an owner and its set when the contract is deployed.  Also this owner account is used to restrict to its self as the unique account able to upgrade the contract.
 
 #### Performance. How much gas will the swapEtherToToken execution and the deployment take?
--> At this moment, the ERC20Swapper contract deployment cost is using **821513** of gas and the Proxy deployment is using **58257**.  The execution of swapEtherToToken function is using in the average an amount of **89001** of gas.  This numbers can easily be verified by running this command ```forge test --gas-report```.  An output can be seen bellow
+-> At this moment, the ERC20Swapper contract deployment cost is using **835926** of gas and the Proxy deployment is using **58257**.  The execution of swapEtherToToken function is using in the average an amount of **86038** of gas.  This numbers can easily be verified by running this command ```forge test --gas-report```.  An output can be seen bellow
 
-| ERC1967Proxy.sol:ERC1967Proxy contract |                 |        |        |        |         |
-|-------------------------------------------------------------------------------------------|-----------------|--------|--------|--------|---------|
-| Deployment Cost                                                                           | Deployment Size |        |        |        |         |
-| 58257                                                                                     | 1130            |        |        |        |         |
-| Function Name                                                                             | min             | avg    | median | max    | # calls |
-| initialize                                                                                | 115659          | 115659 | 115659 | 115659 | 5       |
-| swapEtherToToken                                                                          | 10382           | 93900  | 98004  | 169212 | 4       |
-| upgradeToAndCall                                                                          | 13353           | 13353  | 13353  | 13353  | 1       |
+| ERC1967Proxy contract |                 |       |        |        |         |
+|-----------------------|-----------------|-------|--------|--------|---------|
+| Deployment Cost       | Deployment Size |       |        |        |         |
+| 58257                 | 1130            |       |        |        |         |
+| Function Name         | min             | avg   | median | max    | # calls |
+| getVersion            | 906             | 3156  | 3156   | 5406   | 2       |
+| initialize            | 71511           | 71511 | 71511  | 71511  | 5       |
+| swapEtherToToken      | 10315           | 90938 | 94428  | 164581 | 4       |
+| upgradeToAndCall      | 8952            | 8952  | 8952   | 8952   | 1       |
 
 
-| src/ERC20Swapper.sol:ERC20Swapper contract |                 |        |        |        |         |
-|--------------------------------------------|-----------------|--------|--------|--------|---------|
-| Deployment Cost                            | Deployment Size |        |        |        |         |
-| 821513                                     | 4165            |        |        |        |         |
-| Function Name                              | min             | avg    | median | max    | # calls |
-| initialize                                 | 115272          | 115272 | 115272 | 115272 | 5       |
-| proxiableUUID                              | 321             | 321    | 321    | 321    | 1       |
-| swapEtherToToken                           | 5485            | 89001  | 93101  | 164316 | 4       |
-| upgradeToAndCall                           | 8454            | 8454   | 8454   | 8454   | 1       |
-
+| ERC20Swapper contract |                 |       |        |        |         |
+|-----------------------|-----------------|-------|--------|--------|---------|
+| Deployment Cost       | Deployment Size |       |        |        |         |
+| 835926                | 4237            |       |        |        |         |
+| Function Name         | min             | avg   | median | max    | # calls |
+| getVersion            | 510             | 510   | 510    | 510    | 1       |
+| initialize            | 71124           | 71124 | 71124  | 71124  | 5       |
+| swapEtherToToken      | 5418            | 86038 | 89525  | 159685 | 4       |
+| upgradeToAndCall      | 8553            | 8553  | 8553   | 8553   | 1       |
 
 #### Upgradeability. How can the contract be updated if e.g. the DEX it uses has a critical vulnerability and/or the liquidity gets drained?
 -> If any changes in this contrac is needed, it supports Upgradeability using the UUPS pattern.  Instructions on how to execute it can be found at the section ***Upgade to a new Version*** described in this document.

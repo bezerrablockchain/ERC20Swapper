@@ -36,6 +36,12 @@ abstract contract UniswapPolygon {
         return 0;
     }
 
+    // @notice This function swaps MATIC for ERC-20 token
+    // @dev uniswapSwap swaps MATIC for ERC-20 token
+    // @param token The address of ERC-20 token
+    // @param fee The pool fee of the token
+    // @param minAmount The minimum amount of token to receive
+    // @return amountOut The amount of token received
     function uniswapSwap(
         address token,
         uint24 fee,
