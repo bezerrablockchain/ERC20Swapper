@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../src/ERC20Swapper.sol";
+import "../src/ERC20SwapperV2.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -79,11 +80,14 @@ contract ERC20SwapperTest is Test {
 
     function testUpgrade() public {
         vm.startPrank(owner);
-        ERC20Swapper newImpl = new ERC20Swapper(); //Using same code, but it could be a v2
-
+        assertEq(swapper.getVersion(), "V1.0");
+        ERC20SwapperV2 newImpl = new ERC20SwapperV2();
+        
         swapper.upgradeToAndCall(address(newImpl), "");
+        
+        ERC20SwapperV2 swapperv2 = ERC20SwapperV2(address(proxy));
+        assertEq(swapperv2.getVersion(), "V2.0");
 
-        swapper = ERC20Swapper(address(proxy));
         vm.stopPrank();
     }
 }
