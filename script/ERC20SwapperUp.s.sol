@@ -26,6 +26,8 @@ contract ERC20SwapperDeployer is Script {
 
     function run() public {
         vm.startBroadcast(privateKey);
+        
+        console.log("Actual Version is: ", swapperV1.getVersion());
 
         ERC20SwapperV2 impSwapperV2 = new ERC20SwapperV2();
         swapperV1.upgradeToAndCall(address(impSwapperV2), "");
@@ -34,7 +36,7 @@ contract ERC20SwapperDeployer is Script {
 
         console.log("Implementation contract ERC20Swapper deployed at: ", address(swapperV2));
         console.log("Proxy contract ERC20Swapper deployed at: ", address(proxy));
-        console.log("Actual Version is: ", swapperV2.version());
+        console.log("Upgraded Version is: ", swapperV2.getVersion());
 
         vm.stopBroadcast();
     }
