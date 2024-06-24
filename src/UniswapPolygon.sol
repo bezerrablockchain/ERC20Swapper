@@ -5,12 +5,18 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 
 abstract contract UniswapPolygon {
+    // @dev The address of the uniswap v3 factory on Polygon
     address constant FACTORY_ADDR = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
-    address constant ROUTER_ADDR =
-        0xE592427A0AEce92De3Edee1F18E0157C05861564;
+
+    // @dev The address of the uniswap v3 router on Polygon
+    address constant ROUTER_ADDR = 0xE592427A0AEce92De3Edee1F18E0157C05861564;
+
+    // @dev The address of the WMATIC token
     address constant WMATIC = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270;
 
-    // @notice This function uses the most common pool fee of uniswaps pools
+    // @notice This function uses the most common pool fee of uniswaps pools.
+    // @notice This function also validates a pool exists for the token (fee != 0)
+    // @notice The usage of unchecked to save gas
     // @dev _getPoolFee returns the pool fee of the token
     // @param token The address of ERC-20 token
     // @return poolFee The pool fee of the token

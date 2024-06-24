@@ -14,6 +14,7 @@ contract ERC20SwapperV2 is
     ReentrancyGuardUpgradeable,
     UniswapPolygon
 {
+    // @dev emitted when a token is swapped
     event TokenSwapped(
         address indexed tokenAddress,
         uint256 indexed amountIn,
@@ -21,8 +22,11 @@ contract ERC20SwapperV2 is
         uint minAmount
     );
 
+    // @dev emitted when the minimum value is not reached
     error MinValueNotReached();
+    // @dev emitted when the value is zero
     error NonZeroValueAllowed();
+    // @dev emitted when the pool is not found
     error PoolNotFound();
 
     function initialize() public initializer {
@@ -44,6 +48,8 @@ contract ERC20SwapperV2 is
             revert NonZeroValueAllowed();
         }
 
+        // @dev get the pool fee of the token
+        // @dev also validate if a pool exists for the token (fee != 0)
         uint24 poolFee = getUniswapPoolFee(token);
         if (poolFee == 0) {
             revert PoolNotFound();
