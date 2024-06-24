@@ -166,3 +166,13 @@ But, even not required but a important security matter was covered, the implemen
 
 #### Readability and code quality. Are the code and design understandable and error-tolerant? Is the contract easily testable?
 -> This project is following the Solidity code guide using natSpect in the head of all functions to a better readability and understanding of the code.  Also we covered the most common failure causes what makes it well error-tolerant.  You can find a easy way to test it by following the section ***Tests*** described in this document.
+
+## TL;DR
+For a simple check if this project is running, follow this steps
+
+0. Clone the repo and enter the projects root folder ```ERC20Swapper```
+1. Create a new ```.env``` file based on given at the projects root folder ```.env.example```
+  * Fill the value of ```MAINNET_RPC_URL``` (Must be an Polygon POS mainnet)
+2. ```$ forge install```
+3. ```$ forge build```
+4. ```$ forge test -vvv```
