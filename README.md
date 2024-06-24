@@ -1,6 +1,15 @@
 ## ERC20Swapper
+This project was crafted to work with UniswapV3 on Polygon POS at mainnet, to execute a simple swap between an arbitrary token and Wrapped Matic.
 
-This project wraps a uniswap on Polygon to call a simple swap between Matic and an arbitrary token passed as parameter.  Last section of this document has some consideration about topics like: ***Safety, Performance, Upgradeability, and Code quality***.
+When setting the ```MAINNET_RPC_URL``` please use a valid endpoint RPC to the Polygon POS Mainnet.  And dont worry, when running the tests, no fee will be charged, it means, for running the tests you dont even need an account set, this is possible because the test suite forks the mainnet and impersonate account.
+
+However you need to set ```PRIVATE_KEY``` at your env file with some balance on it, *if you want to run the deployment script.*
+
+About ```.env``` file configuration, see the section ```Environment``` bellow in this document.
+
+This project wraps a uniswapV3 on Polygon POS mainnet to call a simple swap between Matic and an arbitrary token passed as parameter.  
+
+Please refer to the last section of this document has some consideration about topics like: ***Safety, Performance, Upgradeability, and Code quality***.
 
 ### Set of contracts and its description
 #### src/contracts
@@ -16,8 +25,8 @@ This project wraps a uniswap on Polygon to call a simple swap between Matic and 
 * **ERC20Swapper.s.sol**: First contract deployment using foundry and UUP pattern
 * **ERC20SwapperUp.s.sol**: Use this in case of needed upgrade
 
-### forge
-Was used forge to setup the project structure and tests.  Follow this [link](https://book.getfoundry.sh/getting-started/installation) in order to install forge in your system
+### Installation of Foundry (forge)
+It was used Foundry to setup the project structure and tests.  Follow this [link](https://book.getfoundry.sh/getting-started/installation) in order to install forge in your system
 
 Basic steps are:
 * Call
@@ -29,6 +38,7 @@ $ curl -L https://foundry.paradigm.xyz | bash
 ```shell
 $ foundryup
 ```
+
 ### Clone the project
 This project can be found [here](https://github.com/bezerrablockchain/ERC20Swapper).  Clone it into your system, enter into the root folder ```ERC20Swapper``` and follow the instructions bellow in order to correct execute it.
 
@@ -38,10 +48,19 @@ Use ```.env.example``` as model in order to create your own ```.env``` and setup
 Is expected at least this set of variables to be set
 
 ```shell
-ETHERSCAN_API_KEY=""
+ERC20SWAPPER_PROXY="0xA770d67145F627088ec2D120F0e447c7d756cdD1"
+OWNER="0xEdA4e72077E8df4fD8e2267add8c0cfF68382Dd5"
+
 PRIVATE_KEY="0x..."
-MAINNET_RPC_URL="https://polygon..."
+MAINNET_RPC_URL="https://polygon-mainnet..."
+ETHERSCAN_API_KEY=""
 ```
+* ERC20SWAPPER_PROXY: This is the current deployed proxy address, leave as it is, or change in case of a new deployment
+* OWNER: The account used to do the deployment, it is important to test the upgradeability feature
+* PRIVATE_KEY: A valid privatekey, "0x...", this account will be used for deploy and/or update the contracts, for the tests execution its not necessary, as the tests impersonates the necessary accounts
+* MAINNET_RPC_URL: A valid rpc from any node-as-a-service provider, like infura or alchemy.  For running the tests, please use a Polygon POS mainnet one
+* ETHERSCAN_API_KEY: This is necessary for verify the smart contract code at PolygonScan explorer, go to **PolygonScan** and get an API-KEY
+
 ### Install dependencies
 This project uses Openzeppelin libraries, the installation is mandatory to run the project locally, use the command bellow to to it
 ```shell
@@ -104,9 +123,9 @@ You can get a valid ```<your_rpc_url>``` from any node-as-service providers like
 
 
 ### Deployed addresses
- You can find a deployed version of this contract here: [Proxy](https://sepolia.etherscan.io/address/0x2f34d0a1942881010d1eb4847ef3db94e507f5f9#code)
+ You can find a deployed version of this contract here: [Proxy](https://polygonscan.com/address/0xa770d67145f627088ec2d120f0e447c7d756cdd1#code)
 
- You can find a deployed version of this contract here: [Implementation](https://sepolia.etherscan.io/address/0x9c371a4317e17e7e0b9448d787f1d8f6ce7c063b#code)
+ You can find a deployed version of this contract here: [Implementation](https://polygonscan.com/address/0xa1d2e318f2ab7b18f9993d67c436ad32bfc039ff#code)
 
 ## Some more questions to consideer
 
